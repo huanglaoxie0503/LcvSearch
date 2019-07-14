@@ -1,4 +1,5 @@
 import json
+import redis
 from datetime import datetime
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -9,6 +10,19 @@ from search.models import NewsClsType
 
 # Create your views here.
 client = Elasticsearch(hosts=["127.0.0.1"])
+# 连接redis
+redis_cli = redis.StrictRedis()
+
+
+class IndexView(View):
+    """
+    首页
+    """
+    def get(self, request):
+        # 统计热词Top5
+        top_n_search = redis_cli.zrevrangebyscore("search_keywords_set", "+inf", "-inf", start=0, num=5)
+
+        return render(request, "index.html", {"top_n_search": top_n_search})
 
 
 class SuggestView(View):
@@ -39,12 +53,19 @@ class SearchView(View):
     """
     def get(self, request):
         keywords = request.GET.get('q', "")
+        # 搜索关键词+1操作
+        redis_cli.zincrby("search_keywords_set", 1, keywords)
+        # 统计热词Top5
+        top_n_search = redis_cli.zrevrangebyscore("search_keywords_set", "+inf", "-inf", start=0, num=5)
+
         page = request.GET.get("p", "1")
         try:
             page = int(page)
         except:
             page = 1
 
+        # 从redis 里获取新闻总数
+        cls_count = redis_cli.get("cls_count")
         start_time = datetime.now()
         response = client.search(
             index="news",
@@ -103,5 +124,7 @@ class SearchView(View):
             "total_nums": total_nums,
             "page_nums": page_nums,
             "last_seconds": last_seconds,
+            "cls_count": int(cls_count),
+            "top_n_search": top_n_search,
         })
 

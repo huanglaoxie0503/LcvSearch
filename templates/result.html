@@ -32,15 +32,19 @@
                 <ul class="subfieldContext">
                 	<li>
                     	<span class="name">财联社</span>
-						<span class="unit">(None)</span>
+						<span class="unit">({{ cls_count }})</span>
                     </li>
                     <li>
-                    	<span class="name">知乎</span>
-						<span class="unit">(9862)</span>
+                    	<span class="name">选股宝</span>
+						<span class="unit">(0)</span>
                     </li>
                     <li>
-                    	<span class="name">拉勾网</span>
-						<span class="unit">(9862)</span>
+                    	<span class="name">证券时报-快讯</span>
+						<span class="unit">(0)</span>
+                    </li>
+                     <li>
+                    	<span class="name">萝卜投研</span>
+						<span class="unit">(0)</span>
                     </li>
                     <li class="more">
                     	<a href="javascript:;">
@@ -59,9 +63,9 @@
             	<div class="hotSearch">
                 	<h6>热门搜索</h6>
                     <ul class="historyList">
-
-                            <li><a href="/search?q=linux">linux</a></li>
-
+                        {% for search_word in top_n_search %}
+                            <li><a href="/search?q={{ search_word }}">{{ search_word.decode }}</a></li>
+                        {% endfor %}
                     </ul>
                 </div>
                 <div class="mySearch">
