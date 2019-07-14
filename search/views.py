@@ -11,6 +11,7 @@ from search.models import NewsClsType
 # Create your views here.
 client = Elasticsearch(hosts=["127.0.0.1"])
 # 连接redis
+import redis
 redis_cli = redis.StrictRedis()
 
 

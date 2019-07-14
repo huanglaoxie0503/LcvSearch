@@ -5,3 +5,16 @@
 2、ElasticSearch-head
 
 3、kibana-5.1.1
+
+-----
+添加热搜关键词、热词统计并取出前5个
+
+```python
+ import redis
+ redis_cli = redis.StrictRedis()
+ keywords = "关键词"
+ # 搜索关键词+1操作
+ redis_cli.zincrby("search_keywords_set", 1, keywords)
+  # 统计热词Top5
+ top_n_search = redis_cli.zrevrangebyscore("search_keywords_set", "+inf", "-inf", start=0, num=5)
+```
